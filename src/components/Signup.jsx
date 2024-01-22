@@ -21,7 +21,9 @@ export default function Signup(){
             username,
             email,
             date:new Date().toString(),
-            id:user.uid
+            id:user.uid,
+            isDriver:false,
+            status:false
          })
        })
        .catch((error) => {

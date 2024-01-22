@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
+import React, { useEffect, useState, useRef, useLayoutEffect, useCallback, useMemo } from "react";
 import Header from "./Header";
 import { useParams } from 'react-router-dom';
 import { onValue, ref, getDatabase, push } from 'firebase/database';
@@ -12,6 +12,8 @@ export default function Chatroom() {
     const [message,setMessage] = useState('');
     const [chat,setChat] = useState([]);
     const [users,setUsers] = useState([]);
+    const [chosenLanguage,setChosenLanguage] = useState('en');
+    const [worldLanguages,setWorldLanguages] = useState([]);
 
     const { english,setEnglish } = React.useContext(LanguageContext);
 
@@ -30,7 +32,7 @@ export default function Chatroom() {
     }
 
 
-function fetchAllChats(){
+const fetchAllChats = useCallback(() => {
     onValue(ref(db,`chat/`),(chatsData) => {
         let chatsArray = []
        chatsData.forEach((chat) => {
@@ -39,9 +41,9 @@ function fetchAllChats(){
        console.log(chatsArray)
        setChat(chatsArray)
    })
-}
+},[chat])
 
-function fetchUsers(){
+const fetchUsers = useCallback(() => {
     onValue(ref(db,`users`),(usersData) => {
         let usersArray = []
         usersData.forEach((user) => {
@@ -54,7 +56,7 @@ function fetchUsers(){
         })
         setUsers(usersArray);
     })
-}
+},[users])
 
 
 useEffect(() => {
@@ -63,10 +65,7 @@ useEffect(() => {
 
 
 
-useEffect(() => {
-   fetchUsers()
-   fetchAllChats()
-},[])
+
 
 
 async function translator(from, to, text) {
@@ -103,10 +102,34 @@ async function translator(from, to, text) {
 
 
  async function fetchData(t){
-    let text = await translator('en','uz',t);
+    let text = await translator('uz',chosenLanguage,t);
     console.log(text)
     return text
   }
+
+  // useCallback vs useMemo
+
+   const getLanguages = useCallback(async () => {
+    const url = 'https://google-translate1.p.rapidapi.com/language/translate/v2/languages';
+const options = {
+	method: 'GET',
+	headers: {
+		'Accept-Encoding': 'application/gzip',
+		'X-RapidAPI-Key': '98405912eamshd9518930844d7ecp11ec3bjsnea7984244fd0',
+		'X-RapidAPI-Host': 'google-translate1.p.rapidapi.com'
+	}
+};
+
+try {
+	const response = await fetch(url, options);
+	const result = await response.json();
+	console.log(result);
+    console.log(result?.data)
+    setWorldLanguages(result?.data?.languages)
+} catch (error) {
+	console.error(error);
+}
+   },[worldLanguages])
 
 
 
@@ -139,6 +162,15 @@ function findUsername(id){
 function chooseImage(){
     alert('Ready to upload image..')
 }
+
+console.log(chosenLanguage)
+
+useEffect(() => {
+    fetchUsers()
+    fetchAllChats()
+    getLanguages()
+ },[])
+
 
 
   return (
@@ -177,6 +209,14 @@ function chooseImage(){
         value={message}
         required
         />
+        <select onChange={(e) => setChosenLanguage(e.target.value)}
+        className="language" name="" id="">
+            {
+                worldLanguages?.map((lang,index) => (
+                    <option key={index} value={lang?.language}>{lang?.language}</option>
+                ))
+            }
+        </select>
         <button onClick={chooseImage} type="button" className="image-button">
         <IoMdImages size={20} />
         </button>

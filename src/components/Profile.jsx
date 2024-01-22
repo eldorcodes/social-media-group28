@@ -10,14 +10,62 @@ function UserInfo(props) {
     signOut(getAuth())
   }
 
+
+const myPromise = async () => {
+  let x = 10
+  if (x == 10) {
+    return 'success10'
+  }else{
+    return 'erro10r'
+  }
+}
+
+async function getCountry(){
+  if (12 == 12) {
+    return 'USA'
+  }else{
+    return 'Failed to fetch'
+  }
+}
+
+myPromise()
+.then((res) => {
+  console.log(res)
+  getCountry()
+  .then((c) => {
+    console.log(c)
+    // continue
+  })
+  .catch(e => console.log(e))
+})
+.catch(err => console.log(err))
+
+
+async function findData(){
+  try {
+    let data = await myPromise();
+    let c = await getCountry();
+    console.log(data)
+    console.log(c)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+findData()
+
+
+
+
+
+
   async function getData(){
     let dataRaw = await fetch(`http://localhost:5555/data`,{
       headers:{'Content-Type':'Application/json'},
       method:'POST'
     });
-    let data = dataRaw.json();
-    data.then((res) => console.log(res))
-    .catch(err => console.log(err))
+    let data = await dataRaw.json();
+    console.log(data);
   }
 
 
@@ -27,8 +75,6 @@ function UserInfo(props) {
     <h1>{props.username}</h1>
     <p>{props.email}</p>
     <button onClick={logUserOut}>Sign Out</button>
-    <br />
-    <button onClick={getData}>GET DATA</button>
     </>
   )
 }
@@ -74,7 +120,6 @@ export default class Profile extends Component {
         username={this.state.username} 
         email={this.state.email} 
         />
-        <a href="/users">Users</a>
     </div>
     )
   }

@@ -1,5 +1,10 @@
 import React from "react";
 import { LanguageContext } from "./Language";
+import Container from 'react-bootstrap/Container';
+import Nav from 'react-bootstrap/Nav';
+import Navbar from 'react-bootstrap/Navbar';
+import NavDropdown from 'react-bootstrap/NavDropdown';
+import { getAuth, signOut } from "firebase/auth";
 
 export default function Header(props) {
   const { 
@@ -69,31 +74,32 @@ export default function Header(props) {
   }
 
 
+  return (
+    <Navbar fixed="top" data-bs-theme="dark" bg="dark" expand="lg" className="bg-body-tertiary">
+    <Container>
+      <Navbar.Brand href="#home">{props.title}</Navbar.Brand>
+      <Navbar.Toggle aria-controls="basic-navbar-nav" />
+      <Navbar.Collapse id="basic-navbar-nav">
+        <Nav className="me-auto">
+          <Nav.Link href="/">{pText}</Nav.Link>
+          <Nav.Link href="/users">{chText}</Nav.Link>
+          <NavDropdown title="Dropdown" id="basic-nav-dropdown">
+            <NavDropdown.Item href="/chatroom">{chatRoomTitle}</NavDropdown.Item>
+            <NavDropdown.Item href="/contact">
+              Contact us
+            </NavDropdown.Item>
+            <NavDropdown.Item>
+            <button onClick={updateLanguage}>{english ? 'EN':'UZ'}</button>
+            </NavDropdown.Item>
+            <NavDropdown.Divider />
+            <NavDropdown.Item onClick={() => signOut(getAuth())}>
+              {logoutText}
+            </NavDropdown.Item>
+          </NavDropdown>
+        </Nav>
+      </Navbar.Collapse>
+    </Container>
+  </Navbar>
+  )
 
-  return <div className={`header ${props.fixed}`}>
-    <h1>{props.title}</h1>
-    <a className="a" href="/">
-      {
-        pText
-      }
-    </a>
-    <a className="a" href="/users">
-      {
-       chText
-      }
-    </a>
-    <a className="a" href="/chatroom">
-      {
-        chatRoomTitle
-      }
-    </a>
-    <a className="a" href="/logout">
-      {
-        logoutText
-      }
-    </a>
-    <a className="a">
-      <button onClick={updateLanguage}>{english ? 'EN':'UZ'}</button>
-    </a>
-  </div>
 }

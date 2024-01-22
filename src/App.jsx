@@ -12,6 +12,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Users from './components/Users';
 import Chatroom from './components/Chatroom';
 import Language from './components/Language';
+import Contact from './components/Contact';
 
 function App() {
   const [isLoggedIn,setIsLoggedIn] = useState(false);
@@ -35,6 +36,7 @@ function App() {
     <Route path='/' element={<Profile/>} />
     <Route path='/users' element={<Users/>} />
     <Route path='/chatroom/:id' element={<Chatroom />} />
+    <Route path='/contact' element={<Contact />} />
     <Route path='*' element={<Profile/>} />
    </Routes> 
    :
@@ -42,6 +44,7 @@ function App() {
       <Route path='/' element={<Login />} />
       <Route path='/signup' element={<Signup />} />
       <Route path='/password' element={<Password/>} />
+      <Route path='*' element={<Login />} />
     </Routes>
     }
     </BrowserRouter>
